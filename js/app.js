@@ -54,6 +54,10 @@ const loanAmountField = document.querySelector("#loan_amount");
 const interestRateField = document.querySelector("#interest_rate");
 const loanPeriodField = document.querySelector("#loan_period");
 const loanStartDateField = document.querySelector("#loan_start_date");
+
+const fixedEMIField = document.querySelector("#lblFixedEMI");
+const variableEMIField = document.querySelector("#lblVariableEMI");
+
 if (loanStartDateField.value == undefined || loanStartDateField.value == "") {
   currentDate = loanStartDateField.value = new Date()
     .toLocaleDateString("en-US", {
@@ -83,7 +87,8 @@ loanAmountField.addEventListener("change", (e) => calculateEmiAmount());
 interestRateField.addEventListener("change", (e) => calculateEmiAmount());
 loanPeriodField.addEventListener("change", (e) => calculateEmiAmount());
 loanStartDateField.addEventListener("change", (e) => calculateEmiAmount());
-// partPayInstallmentField.addEventListener("change", (e) => calculateEmiAmount());
+fixedEMIAmountField.addEventListener("change", (e) => calculateEmiAmount());
+fixedNumberOfPaymentsField.addEventListener("change", (e) => calculateEmiAmount());
 window.addEventListener("DOMContentLoaded", (event) => {
   calculateEmiAmount();
 });
@@ -167,10 +172,14 @@ function calculateEmiAmount() {
     var totalEarlyPayments = 0;
     var totalInterest = 0;
 
-
     let fixedMonths = fixedNumberOfPayments * 12;
     let fixedEMI = fixedEMIAmount;
+    let isCompleted = false;
+    let fixedMonthCount = 0;
+    let variableMonthCount = 0;
+    let emi = 0;
     for (var i = 1; i <= fixedMonths; i++) {
+      fixedMonthCount = i;
       // This is to make sure the exact amount to be taken for last EMI
       let emiForThisInstallment =
         beginningBalance < fixedEMI ? beginningBalance : fixedEMI;
@@ -222,6 +231,7 @@ function calculateEmiAmount() {
       });
 
       if (beginningBalance < fixedEMI) {
+        isCompleted = true;
         break;
       }
 
@@ -233,14 +243,17 @@ function calculateEmiAmount() {
       if (beginningBalance <= 0) break;
     }
 
+    if(!isCompleted)
+    {
     nom = (loanPeriod * 12)-(fixedMonths) ;
     rateVariable = Math.pow(1 + roi, nom);
 
-    const emi = Math.round(
+    emi = Math.round(
       beginningBalance * roi * (rateVariable / (rateVariable - 1))
     );
 
     for (var i = 1; i <= nom; i++) {
+      variableMonthCount = i ;
       // This is to make sure the exact amount to be taken for last EMI
       let emiForThisInstallment =
         beginningBalance < emi ? beginningBalance : emi;
@@ -302,8 +315,21 @@ function calculateEmiAmount() {
 
       if (beginningBalance <= 0) break;
     }
+  }
+
 
     if (amortSchedule.length > 0) {
+      if(fixedMonthCount > 0 )
+          fixedEMIField.innerHTML = "EMI ₹"+fixedEMI+" for "+fixedMonthCount+" Months" ;
+      else
+          fixedEMIField.innerHTML = "" ;
+
+      if(isCompleted == false && variableMonthCount > 0 )
+          variableEMIField.innerHTML = "EMI ₹"+emi+" for "+variableMonthCount+" Months" ;
+      else
+          variableEMIField.innerHTML = "" ;
+
+
       amortTable.style.display = "block";
 
       var tableBody = "";
