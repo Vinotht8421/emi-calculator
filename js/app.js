@@ -320,14 +320,14 @@ function calculateEmiAmount() {
 
     if (amortSchedule.length > 0) {
       if(fixedMonthCount > 0 )
-          fixedEMIField.innerHTML = "EMI ₹"+fixedEMI+" for "+fixedMonthCount+" Months" ;
+          fixedEMIField.innerText = "EMI ₹"+fixedEMI+" for "+fixedMonthCount+" Months" ;
       else
-          fixedEMIField.innerHTML = "" ;
+          fixedEMIField.innerText = "" ;
 
       if(isCompleted == false && variableMonthCount > 0 )
-          variableEMIField.innerHTML = "EMI ₹"+emi+" for "+variableMonthCount+" Months" ;
+          variableEMIField.innerText = "EMI ₹"+emi+" for "+variableMonthCount+" Months" ;
       else
-          variableEMIField.innerHTML = "" ;
+          variableEMIField.innerText = "" ;
 
 
       amortTable.style.display = "block";
